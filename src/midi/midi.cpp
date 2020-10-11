@@ -1,6 +1,6 @@
-#include "midi.h"
+#include "midier/midi/midi.h"
 
-#include "../debug/debug.h"
+#include "midier/debug/debug.h"
 
 #ifdef ARDUINO
 #include <Arduino.h>

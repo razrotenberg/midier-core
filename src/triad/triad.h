@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../degree/degree.h"
-#include "../interval/interval.h"
-#include "../quality/quality.h"
+#include "midier/degree/degree.h"
+#include "midier/interval/interval.h"
+#include "midier/quality/quality.h"
 
 namespace midier
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interval/interval.h"
+#include "midier/interval/interval.h"
 
 namespace midier
 {

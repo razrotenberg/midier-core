@@ -1,9 +1,9 @@
-#include "debug.h"
+#include "midier/debug/debug.h"
 
 #ifdef DEBUG
 
-#include "../layer/layer.h"
-#include "../time/time.h"
+#include "midier/layer/layer.h"
+#include "midier/time/time.h"
 
 #if defined(ARDUINO)
 

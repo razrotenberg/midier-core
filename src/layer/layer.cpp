@@ -1,8 +1,8 @@
-#include "layer.h"
+#include "midier/layer/layer.h"
 
-#include "../scale/scale.h"
-#include "../style/style.h"
-#include "../triad/triad.h"
+#include "midier/scale/scale.h"
+#include "midier/style/style.h"
+#include "midier/triad/triad.h"
 
 namespace midier
 {

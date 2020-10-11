@@ -1,4 +1,4 @@
-#include "scale.h"
+#include "midier/scale/scale.h"
 
 #include <Arduino.h>
 

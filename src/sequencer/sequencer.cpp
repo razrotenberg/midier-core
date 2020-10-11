@@ -1,6 +1,6 @@
-#include "sequencer.h"
+#include "midier/sequencer/sequencer.h"
 
-#include "../debug/debug.h"
+#include "midier/debug/debug.h"
 
 #include <Arduino.h>
 

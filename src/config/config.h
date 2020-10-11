@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../note/note.h"
-#include "../octave/octave.h"
-#include "../mode/mode.h"
-#include "../rhythm/rhythm.h"
+#include "midier/note/note.h"
+#include "midier/octave/octave.h"
+#include "midier/mode/mode.h"
+#include "midier/rhythm/rhythm.h"
 
 namespace midier
 {

@@ -1,8 +1,8 @@
-#include "rhythm.h"
+#include "midier/rhythm/rhythm.h"
 
-#include "../debug/debug.h"
-#include "../layer/layer.h"
-#include "../time/time.h"
+#include "midier/debug/debug.h"
+#include "midier/layer/layer.h"
+#include "midier/time/time.h"
 
 #include <Arduino.h>
 

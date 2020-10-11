@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../config/config.h"
-#include "../debug/debug.h"
-#include "../degree/degree.h"
-#include "../mode/mode.h"
-#include "../midi/midi.h"
-#include "../note/note.h"
-#include "../octave/octave.h"
-#include "../rhythm/rhythm.h"
-#include "../time/time.h"
+#include "midier/config/config.h"
+#include "midier/debug/debug.h"
+#include "midier/degree/degree.h"
+#include "midier/mode/mode.h"
+#include "midier/midi/midi.h"
+#include "midier/note/note.h"
+#include "midier/octave/octave.h"
+#include "midier/rhythm/rhythm.h"
+#include "midier/time/time.h"
 
 namespace midier
 {

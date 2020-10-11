@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../degree/degree.h"
+#include "midier/degree/degree.h"
 
 namespace midier
 {

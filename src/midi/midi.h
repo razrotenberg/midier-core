@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../note/note.h"
-#include "../octave/octave.h"
+#include "midier/note/note.h"
+#include "midier/octave/octave.h"
 
 namespace midier
 {
