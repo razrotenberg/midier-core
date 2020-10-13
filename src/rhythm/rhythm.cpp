@@ -4,7 +4,7 @@
 #include "midier/layer/layer.h"
 #include "midier/time/time.h"
 
-#include <Arduino.h>
+#include <algorithm>
 
 namespace midier
 {
@@ -27,18 +27,18 @@ inline unsigned integer(float x)
 namespace descriptions
 {
 
-const Description PROGMEM _0  = "[*           ]";
-const Description PROGMEM _1  = "[*     *     ]";
-const Description PROGMEM _2  = "[*  *  *  *  ]";
-const Description PROGMEM _3  = "[*  *  *     ]";
-const Description PROGMEM _4  = "[*     *  *  ]";
-const Description PROGMEM _5  = "[*  *     *  ]";
-const Description PROGMEM _6  = "[   *  *  *  ]";
-const Description PROGMEM _7  = "[*   *   *   ]";
-const Description PROGMEM _8  = "[*       *   ]";
-const Description PROGMEM _9  = "[*      (*)  ]";
-const Description PROGMEM _10 = "[* * * * * * ]";
-const Description PROGMEM _11 = "[*   * *   * ]";
+const Description _0  = "[*           ]";
+const Description _1  = "[*     *     ]";
+const Description _2  = "[*  *  *  *  ]";
+const Description _3  = "[*  *  *     ]";
+const Description _4  = "[*     *  *  ]";
+const Description _5  = "[*  *     *  ]";
+const Description _6  = "[   *  *  *  ]";
+const Description _7  = "[*   *   *   ]";
+const Description _8  = "[*       *   ]";
+const Description _9  = "[*      (*)  ]";
+const Description _10 = "[* * * * * * ]";
+const Description _11 = "[*   * *   * ]";
 
 } // descriptions
 
@@ -51,58 +51,34 @@ namespace portions
 #define _1_4(i) (i / 4.f)
 #define _1_6(i) (i / 6.f)
 
-const float PROGMEM _0  [] = { _1_1(0)                              };  // 1/4                        [*           ]
-const float PROGMEM _1  [] = { _1_2(0),          _1_2(1)            };  // 1/8       1/8              [*     *     ]
-const float PROGMEM _2  [] = { _1_4(0), _1_4(1), _1_4(2), _1_4(3)   };  // 1/16 1/16 1/16 1/16        [*  *  *  *  ]
-const float PROGMEM _3  [] = { _1_4(0), _1_4(1), _1_4(2)            };  // 1/16 1/16 1/8              [*  *  *     ]
-const float PROGMEM _4  [] = { _1_4(0),          _1_4(2), _1_4(3)   };  // 1/8       1/16 1/16        [*     *  *  ]
-const float PROGMEM _5  [] = { _1_4(0), _1_4(1),          _1_4(3)   };  // 1/16 1/8       1/16        [*  *     *  ]
-const float PROGMEM _6  [] = {          _1_4(1), _1_4(2), _1_4(3)   };  //      1/16 1/16 1/16        [   *  *  *  ]
-const float PROGMEM _7  [] = { _1_3(0),      _1_3(1),     _1_3(2)   };  // 1/8th note triplet         [*   *   *   ]
-const float PROGMEM _8  [] = { _1_3(0),                   _1_3(2)   };  // 1/8th note swung triplet   [*       *   ]
-const float PROGMEM _9  [] = { _1_3(0), _1_3(3),          _1_3(5)   };  // 2-bar 1/8th note swing     [*      (*)  ]
-const float PROGMEM _10 [] =                                            // 1/16th note sextuplet      [* * * * * * ]
+const float _0  [] = { _1_1(0)                              };  // 1/4                        [*           ]
+const float _1  [] = { _1_2(0),          _1_2(1)            };  // 1/8       1/8              [*     *     ]
+const float _2  [] = { _1_4(0), _1_4(1), _1_4(2), _1_4(3)   };  // 1/16 1/16 1/16 1/16        [*  *  *  *  ]
+const float _3  [] = { _1_4(0), _1_4(1), _1_4(2)            };  // 1/16 1/16 1/8              [*  *  *     ]
+const float _4  [] = { _1_4(0),          _1_4(2), _1_4(3)   };  // 1/8       1/16 1/16        [*     *  *  ]
+const float _5  [] = { _1_4(0), _1_4(1),          _1_4(3)   };  // 1/16 1/8       1/16        [*  *     *  ]
+const float _6  [] = {          _1_4(1), _1_4(2), _1_4(3)   };  //      1/16 1/16 1/16        [   *  *  *  ]
+const float _7  [] = { _1_3(0),      _1_3(1),     _1_3(2)   };  // 1/8th note triplet         [*   *   *   ]
+const float _8  [] = { _1_3(0),                   _1_3(2)   };  // 1/8th note swung triplet   [*       *   ]
+const float _9  [] = { _1_3(0), _1_3(3),          _1_3(5)   };  // 2-bar 1/8th note swing     [*      (*)  ]
+const float _10 [] =                                            // 1/16th note sextuplet      [* * * * * * ]
             { _1_6(0), _1_6(1), _1_6(2), _1_6(3), _1_6(4), _1_6(5) };
-const float PROGMEM _11 [] =                                            // 1/16th note swung tuplet   [*   * *   * ]
+const float _11 [] =                                            // 1/16th note swung tuplet   [*   * *   * ]
             { _1_6(0),          _1_6(2), _1_6(3),          _1_6(5) };
 
 }
 
 struct Rhythmer
 {
-    void description(/* out */ Description & out)
-    {
-        strcpy_P(
-            /* out */ out,
-            (char const *)pgm_read_ptr(&(this->_description))
-        );
-    }
-
-    Rate rate() const
-    {
-        return (Rate)pgm_read_byte(&(this->_rate));
-    }
-
-    unsigned count() const
-    {
-        return (unsigned)pgm_read_byte(&(this->_count));
-    }
-
-    float portion(unsigned index)
-    {
-        return pgm_read_float((float const *)pgm_read_ptr(&(this->_portions)) + index);
-    }
-
-    // members should not be accessed directly as they hold addresses to PROGMEM
-    const char * _description;
-    Rate _rate;
-    unsigned char _count;
-    const float * _portions;
+    const char * description;
+    Rate rate;
+    unsigned char count;
+    const float * portions;
 };
 
 #define RHYTHMER(__i, __rate) { descriptions:: __i, __rate, (sizeof(portions:: __i) / sizeof(portions:: __i[0])), portions::__i }
 
-const Rhythmer __rhythmers[] PROGMEM =
+const Rhythmer __rhythmers[] =
     {
         RHYTHMER(_0,  Rate::_1_4),
         RHYTHMER(_1,  Rate::_1_8),
@@ -124,26 +100,26 @@ static_assert(sizeof(__rhythmers) / sizeof(__rhythmers[0]) == (unsigned)Rhythm::
 
 void description(Rhythm rhythm, /* out */ Description & desc)
 {
-    __rhythmers[(unsigned)rhythm].description(/* out */ desc);
+    strcpy(/* out */ desc, __rhythmers[(unsigned)rhythm].description);
 }
 
 bool played(Rhythm rhythm, const Layer & layer, /* out */ unsigned & index)
 {
     const Rhythmer & rhythmer = __rhythmers[(unsigned)rhythm];
 
-    const auto count = rhythmer.count();
+    const auto count = rhythmer.count;
 
     unsigned length = 1; // # of bars in the rhythm
     for (unsigned i = 0; i < count; ++i)
     {
-        length = max(length, integer(rhythmer.portion(i)) + 1);
+        length = std::max(length, integer(rhythmer.portions[i]) + 1);
     }
 
     const auto difference = Time::now - layer.start;
 
     for (unsigned i = 0; i < count; ++i)
     {
-        const auto portion = rhythmer.portion(i);
+        const auto portion = rhythmer.portions[i];
 
         if (difference.subdivisions != (char)(fractional(portion) * Time::Subdivisions))
         {
@@ -167,7 +143,7 @@ bool played(Rhythm rhythm, const Layer & layer, /* out */ unsigned & index)
 
 Rate rate(Rhythm rhythm)
 {
-    return __rhythmers[(unsigned)rhythm].rate();
+    return __rhythmers[(unsigned)rhythm].rate;
 }
 
 } // rhythm

@@ -23,12 +23,6 @@ struct Sequencer
         // bar index
     };
 
-    enum class Run : char
-    {
-        Sync,
-        Async,
-    };
-
     // this class is made to hide the underlying `Layer` from the client
     // so he or she will not call `Layer` methods directly but will call
     // `Sequencer` methods only
@@ -44,8 +38,6 @@ struct Sequencer
     // creation
     Sequencer(ILayers layers);
     Sequencer(ILayers layers, const Config & config);
-    Sequencer(ILayers layers,                        unsigned char bpm);
-    Sequencer(ILayers layers, const Config & config, unsigned char bpm);
 
     // queries
     bool recording() const;
@@ -68,33 +60,19 @@ struct Sequencer
     //   2) reset the beat if reached the end of the recorded loop
     //   3) click all layers
     //
-    // this can be done either synchronously or asynchronously
-    //
-    // synchronous calls are blocking and wait for enough time to pass before
-    // actually clicking the next subdivision in order for the bar to take
-    // the correct amount of time according to `bpm`
-    //
-    // asynchronous calls are non-blocking and return `Bar::Same` if it's too
+
+    // this is done asynchronously
+    // calls are non-blocking and return `Bar::Same` if it's too
     // soon to actually click
     //
     // returns an indicator of any changes in the record loop bar or its index
     // if we are currently inside a record loop
     //
-    Bar click(Run run);
-
-    // run synchronously for a certain time duration
-    // these methods are blocking and return after the time duration has fully passed
-    void run(const Time::Duration & duration);
-
-    // synchronously play a scale degree for a certain time duration
-    // the scale degree is stopped at the end of the duration
-    void play(Degree degree, const Time::Duration & duration);
-    void play(Degree degree, const Time::Duration & duration, const Config & config);
+    Bar click();
 
     // exposed members
     Assist assist = Assist::No;
     ILayers layers;
-    unsigned char bpm;
     Config config; // common layer configuration
 
 private:
@@ -106,8 +84,6 @@ private:
         Playback,
         Overlay,
     };
-
-    unsigned long long _clicked = -1; // timestamp of previous click
 
     struct {
         Time when; // when we started to record
