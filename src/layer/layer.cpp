@@ -88,7 +88,13 @@ void Layer::revoke()
     if (_played.subdivisions != -1)
     {
         TRACE_2(F("A note is still being played for revoked layer "), *this);
-        midi::off(_played.number); // stop the note that is still being played by this layer
+        for (unsigned i = 0; i < sizeof(_played.numbers) / sizeof(_played.numbers[0]); ++i)
+        {
+            TRACE_2(F("Stopping "), (unsigned)_played.numbers[i]);
+            midi::off(_played.numbers[i]);
+        }
+
+        // midi::off(_played.number); // stop the note that is still being played by this layer
     }
 
     _state = State::Idle; // will affect immediately
@@ -109,7 +115,13 @@ void Layer::click()
 
         if (++_played.subdivisions >= subdivisions)
         {
-            midi::off(_played.number);
+            for (unsigned i = 0; i < sizeof(_played.numbers) / sizeof(_played.numbers[0]); ++i)
+            {
+            TRACE_2(F("Stopping "), (unsigned)_played.numbers[i]);
+                midi::off(_played.numbers[i]);
+            }
+
+            // midi::off(_played.number);
             _played.subdivisions = -1;
         }
     }
@@ -208,8 +220,8 @@ void Layer::click()
         return; // in playback mode and out of loop
     }
 
-    unsigned index;
-    if (!rhythm::played(config->rhythm(), *this, /* out */ index))
+    unsigned _;
+    if (!rhythm::played(config->rhythm(), *this, /* out */ _))
     {
         return; // not playing right now rhythmically
     }
@@ -221,19 +233,6 @@ void Layer::click()
         steps = (steps * 2) - 2;
     }
 
-    index %= steps;
-
-    if (index >= config->steps())
-    {
-        index = config->steps() - (index - config->steps() + 1) - 1; // the respective mirrored index
-    }
-
-    const auto note = config->note() + config->accidental()
-        + scale::interval(config->mode(), chord)
-        + triad::interval(
-            scale::quality(config->mode(), chord),
-            style::degree(config->steps(), config->perm(), index));
-
     if (_played.subdivisions != -1)
     {
         TRACE_2(F("A note is still being played for layer "), *this);
@@ -241,13 +240,41 @@ void Layer::click()
         // at most one note can be played at a time by every layer
         // if there still is a note being played because of this layer, we
         // stop playing it right before starting to play the new note
-        midi::off(_played.number);
+
+        for (unsigned i = 0; i < 3; ++i)
+        {
+            TRACE_2(F("Stopping "), (unsigned)_played.numbers[i]);
+            midi::off(_played.numbers[i]);
+        }
     }
 
-    _played.subdivisions = 0; // start counting the number of clicks the note is playing
-    _played.number = midi::number(note, config->octave());
+    for (auto index : { 1, 3, 5 })
+    {
+        const auto index_ = index;
 
-    midi::on(_played.number, velocity);
+        index %= steps;
+
+        if (index >= config->steps())
+        {
+            index = config->steps() - (index - config->steps() + 1) - 1; // the respective mirrored index
+        }
+
+        const auto note = config->note() + config->accidental()
+            + scale::interval(config->mode(), chord)
+            + triad::interval(
+                scale::quality(config->mode(), chord),
+                style::degree(config->steps(), config->perm(), index));
+
+
+
+        _played.subdivisions = 0; // start counting the number of clicks the note is playing
+        _played.numbers[index_ >> 1] = midi::number(note, config->octave());
+        TRACE_2(F("index: "), (unsigned)index_);
+        TRACE_2(F("index >> 1: "), (unsigned)(index_ >> 1));
+        TRACE_4(F("Playing "), (unsigned)index_ >> 1, F(" "), (unsigned)_played.numbers[index_ >> 1]);
+
+        midi::on(_played.numbers[index_ >> 1], velocity);
+    }
 }
 
 } // midier

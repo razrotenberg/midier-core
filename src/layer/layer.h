@@ -107,7 +107,7 @@ private:
         // at most one MIDI note is played at every moment by a layer
         // this means that we support gate values of no more than 100% (legato)
         char subdivisions = -1; // how many subdivisions the note has been playing for
-        midi::Number number;
+        midi::Number numbers[3];
     } _played;
 };
 
