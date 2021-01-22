@@ -1,4 +1,4 @@
-#include "triad.h"
+#include "midier/triad/triad.h"
 
 namespace midier
 {

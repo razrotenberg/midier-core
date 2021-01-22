@@ -25,9 +25,9 @@ struct Time
     //   3) 1/8 triplet (3 notes in a bar)
     // therefore, we use a multiply of 12 for the number of subdivisions in a bar,
     // as it gives us the needed rhythmic precision
-    // we use 96 in order to shorten the delay after every subdivision played
-    //
-    constexpr static auto Subdivisions = 96;
+    // the larger the value we use, the shorter the gap between subdivisions,
+    // making it more interactive, but more performance consuming
+    constexpr static auto Subdivisions = 36;
 
     struct Difference
     {
@@ -44,6 +44,11 @@ struct Time
     };
 
     static Time now;
+
+    inline static void click()
+    {
+        ++Time::now;
+    }
 };
 
 bool operator==(const Time & lhs, const Time & rhs);

@@ -1,6 +1,6 @@
-#include "mode.h"
+#include "midier/mode/mode.h"
 
-#include <Arduino.h>
+#include <string.h>
 
 namespace midier
 {
@@ -10,15 +10,15 @@ namespace mode
 namespace
 {
 
-const Name PROGMEM __ionian = "Ionian";
-const Name PROGMEM __dorian = "Dorian";
-const Name PROGMEM __phrygian = "Phrygian";
-const Name PROGMEM __lydian = "Lydian";
-const Name PROGMEM __mixolydian = "Mixolydian";
-const Name PROGMEM __aeolian = "Aeolian";
-const Name PROGMEM __locrian = "Locrian";
+const Name __ionian = "Ionian";
+const Name __dorian = "Dorian";
+const Name __phrygian = "Phrygian";
+const Name __lydian = "Lydian";
+const Name __mixolydian = "Mixolydian";
+const Name __aeolian = "Aeolian";
+const Name __locrian = "Locrian";
 
-char const * const __names[] PROGMEM = {
+char const * const __names[] = {
     __ionian,
     __dorian,
     __phrygian,
@@ -34,10 +34,7 @@ static_assert(sizeof(__names) / sizeof(__names[0]) == (unsigned)Mode::Count, "Un
 
 void name(Mode mode, /* out */ Name & name)
 {
-    strcpy_P(
-        /* out */ name,
-        (char const *)pgm_read_ptr(&(__names[(unsigned)mode]))
-    );
+    strcpy(/* out */ name, __names[(unsigned)mode]);
 }
 
 } // mode

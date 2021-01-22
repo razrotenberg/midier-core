@@ -1,6 +1,6 @@
-#include "style.h"
+#include "midier/style/style.h"
 
-#include <Arduino.h>
+#include <cstdio>
 
 namespace midier
 {
@@ -9,6 +9,11 @@ namespace style
 
 namespace
 {
+
+#if defined(__EMSCRIPTEN__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-type"
+#endif
 
 inline unsigned __factorial(unsigned x)
 {
@@ -20,6 +25,10 @@ inline unsigned __factorial(unsigned x)
     else if (x == 5) { return 120; }
     else if (x == 6) { return 720; }
 }
+
+#if defined(__EMSCRIPTEN__)
+#pragma clang diagnostic pop
+#endif
 
 // the algorithm used for permutation generation is based on algorithm 2.16 in the book
 // "Combinatorial Algorithms: Generation, Enumeration, and Search" by Donald L. Kreher, Douglas R. Stinson
@@ -98,12 +107,7 @@ void description(unsigned n, unsigned r, /* out */ Description & desc)
             *pos++ = ' ';
         }
 
-        itoa(pi[i], pos++, 10); // places '\0'
-
-        if (pi[i] >= 10) // 2 digits
-        {
-            ++pos;
-        }
+        pos += sprintf(pos, "%d", pi[i]);
     }
 }
 

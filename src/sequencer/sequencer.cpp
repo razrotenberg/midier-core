@@ -1,8 +1,6 @@
-#include "sequencer.h"
+#include "midier/sequencer/sequencer.h"
 
-#include "../debug/debug.h"
-
-#include <Arduino.h>
+#include "midier/debug/debug.h"
 
 namespace midier
 {
@@ -10,15 +8,8 @@ namespace midier
 Sequencer::Sequencer(ILayers layers) : Sequencer(layers, Config { /* default configuration */ })
 {}
 
-Sequencer::Sequencer(ILayers layers, const Config & config) : Sequencer(layers, config, 60)
-{}
-
-Sequencer::Sequencer(ILayers layers, unsigned char bpm) : Sequencer(layers, Config { /* default configuration */ }, bpm)
-{}
-
-Sequencer::Sequencer(ILayers layers, const Config & config, unsigned char bpm) :
+Sequencer::Sequencer(ILayers layers, const Config & config) :
     layers(layers),
-    bpm(bpm),
     config(config)
 {}
 
@@ -59,7 +50,7 @@ Sequencer::Handle Sequencer::start(Degree degree)
             const auto jumps = Time::Subdivisions / units;
 
             // how many subdivisions passed since the last jump
-            const auto passed = (Time::now - Time { .bars = 0, .subdivisions = _started }).subdivisions % jumps;
+            const auto passed = (Time::now - Time(/* bars = */ 0, /* subdivision = */ _started)).subdivisions % jumps;
 
             // how many subdivisions are left until the next jump
             delay = (jumps - passed) % jumps;
@@ -175,35 +166,8 @@ void Sequencer::wander()
     _state = State::Wander;
 }
 
-Sequencer::Bar Sequencer::click(Run run)
+Sequencer::Bar Sequencer::click()
 {
-    const auto bps = (float)bpm / 60.f; // beats per second
-    const auto mspb = 1000.f / bps; // ms per beat
-    const auto mspc = mspb / (float)midier::Time::Subdivisions; // ms per click
-
-    if (_clicked == -1)
-    {
-        // this is the very first click so no need to wait
-    }
-    else
-    {
-        if (run == Run::Sync)
-        {
-            while (millis() - _clicked < mspc); // wait until enough time has passed
-        }
-        else if (run == Run::Async)
-        {
-            if (millis() - _clicked < mspc)
-            {
-                return Bar::Same; // we don't actually click yet
-            }
-        }
-    }
-
-    _clicked = millis(); // reset the time of the last click to now
-
-    // only now we are actually starting to click
-
     Bar bar = Bar::Same;
 
     if (_started != -1) // check if we should reset `_started`
@@ -314,35 +278,8 @@ Sequencer::Bar Sequencer::click(Run run)
     // let all layers click
     layers.click();
 
-    // after playing all the layers, we advance the global time
-    ++Time::now;
-
     // let the client know if the bar has changed
     return bar;
-}
-
-void Sequencer::run(const Time::Duration & duration)
-{
-    unsigned subdivisions = duration.total();
-
-    while (subdivisions-- > 0)
-    {
-        click(Run::Sync);
-    }
-}
-
-void Sequencer::play(Degree degree, const Time::Duration & duration)
-{
-    const Handle handle = start(degree);
-    run(duration);
-    stop(handle);
-}
-
-void Sequencer::play(Degree degree, const Time::Duration & duration, const Config & config)
-{
-    const Handle handle = start(degree, config);
-    run(duration);
-    stop(handle);
 }
 
 } // midier

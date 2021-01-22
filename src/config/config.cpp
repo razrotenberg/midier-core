@@ -1,4 +1,4 @@
-#include "config.h"
+#include "midier/config/config.h"
 
 namespace midier
 {

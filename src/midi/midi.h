@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../note/note.h"
-#include "../octave/octave.h"
+#include "midier/note/note.h"
+#include "midier/octave/octave.h"
 
 namespace midier
 {
@@ -28,9 +28,13 @@ void on(Number number, Velocity velocity = Velocity::High); // by default max ve
 // send a 'NOTE_OFF' MIDI command
 void off(Number number);
 
+#ifdef ARDUINO
+
 // play a musical note for a specific duration of time (in ms)
 void play(Note note,                unsigned duration = 200);
 void play(Note note, Octave octave, unsigned duration = 200);
+
+#endif
 
 } // midi
 } // midier
